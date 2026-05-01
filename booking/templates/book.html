@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Book {{ room.room_type }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h1 style="font-size: 2rem; margin-bottom: 2rem; text-align: center;">Book Your Stay</h1>
+    
+    <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: 10px;">
+        <h3 style="color: var(--primary-light); margin-bottom: 0.5rem;">{{ room.hotel.name }}</h3>
+        <p style="font-size: 1.2rem; font-weight: 600;">{{ room.room_type }}</p>
+        <p style="color: var(--text-muted);">₹{{ room.price }} / night</p>
+    </div>
+
+    <form method="POST" action="{% url 'book' room.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="check_in">Check-in Date</label>
+            <input type="date" id="check_in" name="check_in" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="check_out">Check-out Date</label>
+            <input type="date" id="check_out" name="check_out" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Proceed to Payment</button>
+    </form>
+    
+    <div style="text-align: center; margin-top: 1.5rem;">
+        <a href="{% url 'rooms' room.hotel.id %}" style="color: var(--text-muted); font-size: 0.9rem;">Cancel and Go Back</a>
+    </div>
+</div>
+
+<script>
+    // Simple script to ensure check-out is after check-in
+    const checkIn = document.getElementById('check_in');
+    const checkOut = document.getElementById('check_out');
+    
+    // Set min date to today
+    const today = new Date().toISOString().split('T')[0];
+    checkIn.min = today;
+    checkOut.min = today;
+
+    checkIn.addEventListener('change', function() {
+        checkOut.min = this.value;
+        if(checkOut.value && checkOut.value < this.value) {
+            checkOut.value = this.value;
+        }
+    });
+</script>
+{% endblock %}

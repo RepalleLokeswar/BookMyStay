@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Complete Payment{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 0 auto; text-align: center;">
+    <h1 style="font-size: 2rem; margin-bottom: 1rem;">Payment Details</h1>
+    
+    {% if error %}
+        <div class="alert">
+            {{ error }}
+        </div>
+        <a href="{% url 'book' room.id %}" class="btn btn-outline" style="margin-top: 1rem;">Go Back</a>
+    {% else %}
+        <div style="margin: 2rem 0;">
+            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">Total Amount</p>
+            <p style="font-size: 3rem; font-weight: 800; color: var(--primary-light);">₹{{ booking.amount }}</p>
+        </div>
+
+        {% if is_simulation %}
+            <div class="alert" style="background: rgba(255, 193, 7, 0.2); border-color: rgba(255, 193, 7, 0.5); color: #ffc107;">
+                <strong>Demo Mode:</strong> Razorpay keys are not configured yet. Click below to simulate a successful payment!
+            </div>
+            <form method="POST" action="{% url 'payment_success' %}">
+                {% csrf_token %}
+                <input type="hidden" name="razorpay_order_id" value="{{ payment.id }}">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.2rem; background: linear-gradient(135deg, #28a745, #218838); box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);">Simulate Success Payment</button>
+            </form>
+        {% else %}
+            <button id="pay-btn" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.2rem;">Pay Now</button>
+
+            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+            <script>
+        var options = {
+            "key": "{{ razorpay_key }}",
+            "amount": "{{ payment.amount }}",
+            "currency": "INR",
+            "name": "BOOK MY Stay",
+            "description": "Booking for {{ booking.room.room_type }}",
+            "order_id": "{{ payment.id }}",
+            "theme": {
+                "color": "#8a2be2"
+            },
+            "handler": function (response){
+                // On success, create a form and submit it to our server
+                var form = document.createElement("form");
+                form.method = "POST";
+                form.action = "{% url 'payment_success' %}";
+                
+                // Add CSRF token
+                var csrfInput = document.createElement("input");
+                csrfInput.type = "hidden";
+                csrfInput.name = "csrfmiddlewaretoken";
+                csrfInput.value = "{{ csrf_token }}";
+                form.appendChild(csrfInput);
+
+                // Add Razorpay Order ID
+                var orderInput = document.createElement("input");
+                orderInput.type = "hidden";
+                orderInput.name = "razorpay_order_id";
+                orderInput.value = response.razorpay_order_id;
+                form.appendChild(orderInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        };
+
+        var rzp = new Razorpay(options);
+
+        document.getElementById('pay-btn').onclick = function(e){
+            rzp.open();
+            e.preventDefault();
+        }
+        </script>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

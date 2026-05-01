@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+<h1 class="text-gradient">My Bookings</h1>
+<p style="color: var(--text-muted); margin-bottom: 2rem;">Here is the history of your stays with us.</p>
+
+{% if bookings %}
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        {% for booking in bookings %}
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h3 style="margin-bottom: 0.5rem; color: #fff;">{{ booking.room.hotel.name }}</h3>
+                <p style="color: var(--primary-light); font-weight: 600;">{{ booking.room.room_type }}</p>
+                <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
+                    <span style="margin-right: 1rem;"><strong style="color: #fff;">Check-in:</strong> {{ booking.check_in }}</span>
+                    <span><strong style="color: #fff;">Check-out:</strong> {{ booking.check_out }}</span>
+                </div>
+            </div>
+            
+            <div style="text-align: right;">
+                <p style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">₹{{ booking.amount }}</p>
+                {% if booking.status == 'CONFIRMED' %}
+                    <span class="badge badge-confirmed">Confirmed</span>
+                {% else %}
+                    <span class="badge badge-pending">Pending</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card" style="text-align: center; padding: 3rem;">
+        <h3 style="margin-bottom: 1rem;">No bookings found.</h3>
+        <p style="margin-bottom: 2rem; color: var(--text-muted);">You haven't booked any stays yet.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary">Explore Hotels</a>
+    </div>
+{% endif %}
+
+{% endblock %}

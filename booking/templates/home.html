@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Discover Hotels{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1 class="text-gradient">Find Your Perfect Stay</h1>
+    <p style="font-size: 1.2rem; color: var(--text-muted);">Experience world-class luxury at unbeatable prices.</p>
+    
+    <form action="{% url 'home' %}" method="GET" class="search-bar">
+        <input type="text" name="q" class="form-control" placeholder="Search by destination or hotel name..." value="{{ query }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+{% if hotels %}
+<div class="grid">
+    {% for hotel in hotels %}
+    <div class="card">
+        {% if hotel.image %}
+            <img src="{{ hotel.image.url }}" alt="{{ hotel.name }}" class="img-fluid">
+        {% else %}
+            <!-- Placeholder if no image -->
+            <div class="img-fluid" style="background: linear-gradient(45deg, #1a1c23, #2a2d39); display: flex; align-items: center; justify-content: center;">
+                <span style="color: var(--text-muted); opacity: 0.5;">No Image Available</span>
+            </div>
+        {% endif %}
+        <h2>{{ hotel.name }}</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 5px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            {{ hotel.location }}
+        </p>
+        <a href="{% url 'rooms' hotel.id %}" class="btn btn-outline" style="width: 100%;">View Rooms</a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card" style="text-align: center; padding: 4rem;">
+    <h2>No hotels found.</h2>
+    <p>Try searching for a different destination.</p>
+</div>
+{% endif %}
+{% endblock %}

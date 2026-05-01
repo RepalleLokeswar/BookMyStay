@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Rooms at {{ hotel.name }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 3rem; display: flex; align-items: center; justify-content: space-between;">
+    <div>
+        <h1 class="text-gradient">{{ hotel.name }}</h1>
+        <p style="color: var(--text-muted);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 5px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            {{ hotel.location }}
+        </p>
+    </div>
+    <a href="{% url 'home' %}" class="btn btn-outline">Back to Hotels</a>
+</div>
+
+<h2>Available Rooms</h2>
+
+{% if rooms %}
+<div class="grid">
+    {% for room in rooms %}
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">{{ room.room_type }}</h3>
+            <p style="font-size: 2rem; font-weight: 800; color: var(--text-main); margin-bottom: 1.5rem;">
+                ₹{{ room.price }}<span style="font-size: 1rem; color: var(--text-muted); font-weight: normal;"> / night</span>
+            </p>
+            <ul style="color: var(--text-muted); margin-bottom: 2rem; padding-left: 1.5rem; line-height: 1.8;">
+                <li>Premium Wi-Fi</li>
+                <li>Complimentary Breakfast</li>
+                <li>24/7 Room Service</li>
+            </ul>
+        </div>
+        <a href="{% url 'book' room.id %}" class="btn btn-primary" style="width: 100%;">Book Now</a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <p>No rooms available for this hotel at the moment.</p>
+</div>
+{% endif %}
+{% endblock %}
